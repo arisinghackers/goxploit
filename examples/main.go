@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/arisinghackers/goxploit/pkg/metasploit"
 	"github.com/arisinghackers/goxploit/pkg/msfrpc"
 )
 
@@ -17,17 +18,11 @@ func main() {
 	}
 	log.Printf("Authenticated successfully, token: %s", resp)
 
-	response, err := client.AuthenticatedRequest([]any{"core.version"})
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Metasploit Core Version: %+v\n", response)
-
-	scraper := msfrpc.NewMsfPayloadScraper()
-	methods, err := scraper.GetArraysPayloadsFromWebsite()
+	typedClient := metasploit.NewClient(client)
+	version, err := typedClient.Core.Version()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(methods)
+	fmt.Printf("Metasploit Core Version: %s (ruby=%s api=%s)\n", version.Version, version.Ruby, version.API)
 
 }
