@@ -4,6 +4,7 @@ package metasploit
 
 import (
 	"errors"
+	"fmt"
 	"github.com/arisinghackers/goxploit/pkg/msfrpc"
 )
 
@@ -24,13 +25,13 @@ func (c *Auth) Login(userName string, userPassword string) (map[string]interface
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Auth) Logout(token string, LogoutToken string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"auth.logout", c.Token, LogoutToken})
+func (c *Auth) Logout(LogoutToken string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"auth.logout", LogoutToken})
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +39,13 @@ func (c *Auth) Logout(token string, LogoutToken string) (map[string]interface{},
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Auth) TokenAdd(token string, NewToken string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"auth.token_add", c.Token, NewToken})
+func (c *Auth) TokenAdd(NewToken string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"auth.token_add", NewToken})
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +53,13 @@ func (c *Auth) TokenAdd(token string, NewToken string) (map[string]interface{}, 
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Auth) TokenGenerate(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"auth.token_generate", c.Token})
+func (c *Auth) TokenGenerate() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"auth.token_generate"})
 	if err != nil {
 		return nil, err
 	}
@@ -66,13 +67,13 @@ func (c *Auth) TokenGenerate(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Auth) TokenList(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"auth.token_list", c.Token})
+func (c *Auth) TokenList() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"auth.token_list"})
 	if err != nil {
 		return nil, err
 	}
@@ -80,13 +81,13 @@ func (c *Auth) TokenList(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Auth) TokenRemove(token string, TokenToBeRemoved string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"auth.token_remove", c.Token, TokenToBeRemoved})
+func (c *Auth) TokenRemove(TokenToBeRemoved string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"auth.token_remove", TokenToBeRemoved})
 	if err != nil {
 		return nil, err
 	}
@@ -94,8 +95,7 @@ func (c *Auth) TokenRemove(token string, TokenToBeRemoved string) (map[string]in
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
-

@@ -4,6 +4,7 @@ package metasploit
 
 import (
 	"errors"
+	"fmt"
 	"github.com/arisinghackers/goxploit/pkg/msfrpc"
 )
 
@@ -15,8 +16,8 @@ func NewSession(client *msfrpc.MsfRpcClient) *Session {
 	return &Session{client}
 }
 
-func (c *Session) List(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.list", c.Token})
+func (c *Session) List() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.list"})
 	if err != nil {
 		return nil, err
 	}
@@ -24,13 +25,13 @@ func (c *Session) List(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) Stop(token string, sessionId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.stop", c.Token, sessionId})
+func (c *Session) Stop(sessionId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.stop", sessionId})
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +39,13 @@ func (c *Session) Stop(token string, sessionId string) (map[string]interface{}, 
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) ShellRead(token string, sessionId string, ReadPointer string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.shell_read", c.Token, sessionId, ReadPointer})
+func (c *Session) ShellRead(sessionId string, ReadPointer string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.shell_read", sessionId, ReadPointer})
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +53,13 @@ func (c *Session) ShellRead(token string, sessionId string, ReadPointer string) 
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) ShellWrite(token string, sessionId string, InputCommand string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.shell_write", c.Token, sessionId, InputCommand})
+func (c *Session) ShellWrite(sessionId string, InputCommand string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.shell_write", sessionId, InputCommand})
 	if err != nil {
 		return nil, err
 	}
@@ -66,13 +67,13 @@ func (c *Session) ShellWrite(token string, sessionId string, InputCommand string
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) MeterpreterWrite(token string, sessionId string, ps string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.meterpreter_write", c.Token, sessionId, ps})
+func (c *Session) MeterpreterWrite(sessionId string, ps string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.meterpreter_write", sessionId, ps})
 	if err != nil {
 		return nil, err
 	}
@@ -80,13 +81,13 @@ func (c *Session) MeterpreterWrite(token string, sessionId string, ps string) (m
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) MeterpreterRead(token string, sessionId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.meterpreter_read", c.Token, sessionId})
+func (c *Session) MeterpreterRead(sessionId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.meterpreter_read", sessionId})
 	if err != nil {
 		return nil, err
 	}
@@ -94,13 +95,13 @@ func (c *Session) MeterpreterRead(token string, sessionId string) (map[string]in
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) MeterpreterRunSingle(token string, sessionId string, ps string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.meterpreter_run_single", c.Token, sessionId, ps})
+func (c *Session) MeterpreterRunSingle(sessionId string, ps string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.meterpreter_run_single", sessionId, ps})
 	if err != nil {
 		return nil, err
 	}
@@ -108,13 +109,13 @@ func (c *Session) MeterpreterRunSingle(token string, sessionId string, ps string
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) MeterpreterScript(token string, sessionId string, scriptName string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.meterpreter_script", c.Token, sessionId, scriptName})
+func (c *Session) MeterpreterScript(sessionId string, scriptName string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.meterpreter_script", sessionId, scriptName})
 	if err != nil {
 		return nil, err
 	}
@@ -122,13 +123,13 @@ func (c *Session) MeterpreterScript(token string, sessionId string, scriptName s
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) MeterpreterSessionDetach(token string, sessionId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.meterpreter_session_detach", c.Token, sessionId})
+func (c *Session) MeterpreterSessionDetach(sessionId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.meterpreter_session_detach", sessionId})
 	if err != nil {
 		return nil, err
 	}
@@ -136,13 +137,13 @@ func (c *Session) MeterpreterSessionDetach(token string, sessionId string) (map[
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) MeterpreterTabs(token string, sessionId string, InputLine string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.meterpreter_tabs", c.Token, sessionId, InputLine})
+func (c *Session) MeterpreterTabs(sessionId string, InputLine string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.meterpreter_tabs", sessionId, InputLine})
 	if err != nil {
 		return nil, err
 	}
@@ -150,13 +151,13 @@ func (c *Session) MeterpreterTabs(token string, sessionId string, InputLine stri
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) CompatibleModules(token string, sessionId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.compatible_modules", c.Token, sessionId})
+func (c *Session) CompatibleModules(sessionId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.compatible_modules", sessionId})
 	if err != nil {
 		return nil, err
 	}
@@ -164,13 +165,13 @@ func (c *Session) CompatibleModules(token string, sessionId string) (map[string]
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) ShellUpgrade(token string, sessionId string, IpAddress string, Port string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.shell_upgrade", c.Token, sessionId, IpAddress, Port})
+func (c *Session) ShellUpgrade(sessionId string, IpAddress string, Port string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.shell_upgrade", sessionId, IpAddress, Port})
 	if err != nil {
 		return nil, err
 	}
@@ -178,13 +179,13 @@ func (c *Session) ShellUpgrade(token string, sessionId string, IpAddress string,
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) RingClear(token string, sessionId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.ring_clear", c.Token, sessionId})
+func (c *Session) RingClear(sessionId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.ring_clear", sessionId})
 	if err != nil {
 		return nil, err
 	}
@@ -192,13 +193,13 @@ func (c *Session) RingClear(token string, sessionId string) (map[string]interfac
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) RingLast(token string, sessionId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.ring_last", c.Token, sessionId})
+func (c *Session) RingLast(sessionId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.ring_last", sessionId})
 	if err != nil {
 		return nil, err
 	}
@@ -206,13 +207,13 @@ func (c *Session) RingLast(token string, sessionId string) (map[string]interface
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Session) RingPut(token string, sessionId string, InputCommand string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"session.ring_put", c.Token, sessionId, InputCommand})
+func (c *Session) RingPut(sessionId string, InputCommand string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"session.ring_put", sessionId, InputCommand})
 	if err != nil {
 		return nil, err
 	}
@@ -220,8 +221,7 @@ func (c *Session) RingPut(token string, sessionId string, InputCommand string) (
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
-

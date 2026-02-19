@@ -4,6 +4,7 @@ package metasploit
 
 import (
 	"errors"
+	"fmt"
 	"github.com/arisinghackers/goxploit/pkg/msfrpc"
 )
 
@@ -15,8 +16,8 @@ func NewJob(client *msfrpc.MsfRpcClient) *Job {
 	return &Job{client}
 }
 
-func (c *Job) List(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"job.list", c.Token})
+func (c *Job) List() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"job.list"})
 	if err != nil {
 		return nil, err
 	}
@@ -24,13 +25,13 @@ func (c *Job) List(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Job) Info(token string, jobId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"job.info", c.Token, jobId})
+func (c *Job) Info(jobId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"job.info", jobId})
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +39,13 @@ func (c *Job) Info(token string, jobId string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Job) Stop(token string, jobId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"job.stop", c.Token, jobId})
+func (c *Job) Stop(jobId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"job.stop", jobId})
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +53,7 @@ func (c *Job) Stop(token string, jobId string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
-

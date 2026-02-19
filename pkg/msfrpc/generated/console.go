@@ -4,6 +4,7 @@ package metasploit
 
 import (
 	"errors"
+	"fmt"
 	"github.com/arisinghackers/goxploit/pkg/msfrpc"
 )
 
@@ -15,8 +16,8 @@ func NewConsole(client *msfrpc.MsfRpcClient) *Console {
 	return &Console{client}
 }
 
-func (c *Console) Create(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"console.create", c.Token})
+func (c *Console) Create() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"console.create"})
 	if err != nil {
 		return nil, err
 	}
@@ -24,13 +25,13 @@ func (c *Console) Create(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Console) Destroy(token string, consoleId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"console.destroy", c.Token, consoleId})
+func (c *Console) Destroy(consoleId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"console.destroy", consoleId})
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +39,13 @@ func (c *Console) Destroy(token string, consoleId string) (map[string]interface{
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Console) List(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"console.list", c.Token})
+func (c *Console) List() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"console.list"})
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +53,13 @@ func (c *Console) List(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Console) Write(token string, ConsoleId string, InputCommand string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"console.write", c.Token, ConsoleId, InputCommand})
+func (c *Console) Write(ConsoleId string, InputCommand string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"console.write", ConsoleId, InputCommand})
 	if err != nil {
 		return nil, err
 	}
@@ -66,13 +67,13 @@ func (c *Console) Write(token string, ConsoleId string, InputCommand string) (ma
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Console) Read(token string, ConsoleId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"console.read", c.Token, ConsoleId})
+func (c *Console) Read(ConsoleId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"console.read", ConsoleId})
 	if err != nil {
 		return nil, err
 	}
@@ -80,13 +81,13 @@ func (c *Console) Read(token string, ConsoleId string) (map[string]interface{}, 
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Console) SessionDetach(token string, consoleId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"console.session_detach", c.Token, consoleId})
+func (c *Console) SessionDetach(consoleId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"console.session_detach", consoleId})
 	if err != nil {
 		return nil, err
 	}
@@ -94,13 +95,13 @@ func (c *Console) SessionDetach(token string, consoleId string) (map[string]inte
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Console) SessionKill(token string, consoleId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"console.session_kill", c.Token, consoleId})
+func (c *Console) SessionKill(consoleId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"console.session_kill", consoleId})
 	if err != nil {
 		return nil, err
 	}
@@ -108,13 +109,13 @@ func (c *Console) SessionKill(token string, consoleId string) (map[string]interf
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Console) Tabs(token string, consoleId string, InputLine string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"console.tabs", c.Token, consoleId, InputLine})
+func (c *Console) Tabs(consoleId string, InputLine string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"console.tabs", consoleId, InputLine})
 	if err != nil {
 		return nil, err
 	}
@@ -122,8 +123,7 @@ func (c *Console) Tabs(token string, consoleId string, InputLine string) (map[st
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
-

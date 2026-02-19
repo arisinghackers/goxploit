@@ -4,6 +4,7 @@ package metasploit
 
 import (
 	"errors"
+	"fmt"
 	"github.com/arisinghackers/goxploit/pkg/msfrpc"
 )
 
@@ -15,8 +16,8 @@ func NewModule(client *msfrpc.MsfRpcClient) *Module {
 	return &Module{client}
 }
 
-func (c *Module) Exploits(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.exploits", c.Token})
+func (c *Module) Exploits() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.exploits"})
 	if err != nil {
 		return nil, err
 	}
@@ -24,13 +25,13 @@ func (c *Module) Exploits(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Auxiliary(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.auxiliary", c.Token})
+func (c *Module) Auxiliary() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.auxiliary"})
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +39,13 @@ func (c *Module) Auxiliary(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Post(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.post", c.Token})
+func (c *Module) Post() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.post"})
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +53,13 @@ func (c *Module) Post(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Payloads(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.payloads", c.Token})
+func (c *Module) Payloads() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.payloads"})
 	if err != nil {
 		return nil, err
 	}
@@ -66,13 +67,13 @@ func (c *Module) Payloads(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Encoders(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.encoders", c.Token})
+func (c *Module) Encoders() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.encoders"})
 	if err != nil {
 		return nil, err
 	}
@@ -80,13 +81,13 @@ func (c *Module) Encoders(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Nops(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.nops", c.Token})
+func (c *Module) Nops() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.nops"})
 	if err != nil {
 		return nil, err
 	}
@@ -94,13 +95,13 @@ func (c *Module) Nops(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Info(token string, ModuleType string, ModuleName string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.info", c.Token, ModuleType, ModuleName})
+func (c *Module) Info(ModuleType string, ModuleName string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.info", ModuleType, ModuleName})
 	if err != nil {
 		return nil, err
 	}
@@ -108,13 +109,13 @@ func (c *Module) Info(token string, ModuleType string, ModuleName string) (map[s
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Options(token string, ModuleType string, ModuleName string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.options", c.Token, ModuleType, ModuleName})
+func (c *Module) Options(ModuleType string, ModuleName string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.options", ModuleType, ModuleName})
 	if err != nil {
 		return nil, err
 	}
@@ -122,13 +123,13 @@ func (c *Module) Options(token string, ModuleType string, ModuleName string) (ma
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) CompatiblePayloads(token string, ModuleName string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.compatible_payloads", c.Token, ModuleName})
+func (c *Module) CompatiblePayloads(ModuleName string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.compatible_payloads", ModuleName})
 	if err != nil {
 		return nil, err
 	}
@@ -136,13 +137,13 @@ func (c *Module) CompatiblePayloads(token string, ModuleName string) (map[string
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) TargetCompatiblePayloads(token string, ModuleName string, SessionId string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.target_compatible_payloads", c.Token, ModuleName, SessionId})
+func (c *Module) TargetCompatiblePayloads(ModuleName string, SessionId string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.target_compatible_payloads", ModuleName, SessionId})
 	if err != nil {
 		return nil, err
 	}
@@ -150,13 +151,13 @@ func (c *Module) TargetCompatiblePayloads(token string, ModuleName string, Sessi
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) CompatibleSessions(token string, ModuleName string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.compatible_sessions", c.Token, ModuleName})
+func (c *Module) CompatibleSessions(ModuleName string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.compatible_sessions", ModuleName})
 	if err != nil {
 		return nil, err
 	}
@@ -164,13 +165,13 @@ func (c *Module) CompatibleSessions(token string, ModuleName string) (map[string
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Encode(token string, Data string, EncoderModule string, Options string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.encode", c.Token, Data, EncoderModule, Options})
+func (c *Module) Encode(Data string, EncoderModule string, Options string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.encode", Data, EncoderModule, Options})
 	if err != nil {
 		return nil, err
 	}
@@ -178,13 +179,13 @@ func (c *Module) Encode(token string, Data string, EncoderModule string, Options
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Module) Execute(token string, ModuleType string, ModuleName string, Options string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"module.execute", c.Token, ModuleType, ModuleName, Options})
+func (c *Module) Execute(ModuleType string, ModuleName string, Options string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"module.execute", ModuleType, ModuleName, Options})
 	if err != nil {
 		return nil, err
 	}
@@ -192,8 +193,7 @@ func (c *Module) Execute(token string, ModuleType string, ModuleName string, Opt
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
-
