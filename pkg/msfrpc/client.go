@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -19,6 +20,7 @@ type MsfRpcClient struct {
 	Port         int
 	WebServerURI string
 	BaseURL      string
+	HTTPClient   *http.Client
 }
 
 func NewMsfRpcClient(userPassword, ssl, userName, ip string, port int, webServerURI string) *MsfRpcClient {
@@ -36,6 +38,7 @@ func NewMsfRpcClient(userPassword, ssl, userName, ip string, port int, webServer
 		Port:         port,
 		WebServerURI: webServerURI,
 		BaseURL:      baseURL,
+		HTTPClient:   &http.Client{Timeout: 30 * time.Second},
 	}
 }
 
@@ -46,20 +49,39 @@ func (c *MsfRpcClient) MsfAuth() (string, error) {
 		return "", err
 	}
 
-	tokenBytes, ok := resp["token"].([]byte)
-	token := string(tokenBytes)
+	rawToken, ok := resp["token"]
 	if !ok {
-		return "", errors.New("missing 'token' in response – check credentials or msfrpcd settings")
+		return "", errors.New("missing 'token' in response; check credentials or msfrpcd settings")
 	}
+
+	var token string
+	switch v := rawToken.(type) {
+	case []byte:
+		token = string(v)
+	case string:
+		token = v
+	default:
+		return "", fmt.Errorf("invalid token type %T", rawToken)
+	}
+
 	c.Token = &token
 	return token, nil
 }
 
 func (c *MsfRpcClient) AuthenticatedRequest(payload []any) (map[string]interface{}, error) {
 	if c.Token == nil {
-		return nil, errors.New("token is nil – you must authenticate first")
+		return nil, errors.New("token is nil; you must authenticate first")
 	}
-	return c.MsfRequest(append(payload, *c.Token))
+	if len(payload) == 0 {
+		return nil, errors.New("payload cannot be empty")
+	}
+
+	requestPayload := []interface{}{payload[0], *c.Token}
+	for _, v := range payload[1:] {
+		requestPayload = append(requestPayload, v)
+	}
+
+	return c.MsfRequest(requestPayload)
 }
 
 // Sends a generic RPC request and decodes the response
@@ -75,21 +97,27 @@ func (c *MsfRpcClient) MsfRequest(clientRequest []interface{}) (map[string]inter
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "binary/message-pack")
-	req.Header.Set("Host", "RPC Server")
 
-	httpClient := &http.Client{}
+	httpClient := c.HTTPClient
+	if httpClient == nil {
+		httpClient = &http.Client{Timeout: 30 * time.Second}
+	}
+
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var decoded map[string]interface{}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return nil, fmt.Errorf("rpc request failed with status %d: %s", resp.StatusCode, string(body))
+	}
 
+	var decoded map[string]interface{}
 	decoder := msgpack.NewDecoder(bytes.NewReader(body))
 	if err := decoder.Decode(&decoded); err != nil {
 		return nil, err
