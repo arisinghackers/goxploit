@@ -11,6 +11,7 @@ It includes:
 - RPC client for Metasploit (`pkg/msfrpc`)
 - Automatic method generation from Rapid7's API docs (`cmd/generator`)
 - Typed SDK surface for stable app usage (`pkg/metasploit`)
+- Typed slices implemented: `auth.login`, `core.version`, `module.execute`
 - Easy integration with other Go projects
 - Simple structure for extending or contributing
 
@@ -24,6 +25,7 @@ go get github.com/arisinghackers/goxploit
 Authenticate and call the typed SDK (`core.version`)
 ```go
 import (
+    "context"
     "fmt"
     "log"
 
@@ -33,13 +35,15 @@ import (
 
 client := msfrpc.NewMsfRpcClient("your_password", "false", "your_username", "127.0.0.1", 55552, "/api")
 sdk := metasploit.NewClient(client)
-login, err := sdk.Auth.Login("your_username", "your_password")
+ctx := context.Background()
+
+login, err := sdk.Auth.LoginContext(ctx, "your_username", "your_password")
 if err != nil {
     log.Fatalf("Auth error: %v", err)
 }
 fmt.Println("Token:", login.Token)
 
-version, err := sdk.Core.Version()
+version, err := sdk.Core.VersionContext(ctx)
 if err != nil {
     log.Fatal(err)
 }

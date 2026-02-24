@@ -1,6 +1,10 @@
 package metasploit
 
-import "github.com/arisinghackers/goxploit/pkg/msfrpc"
+import (
+	"context"
+
+	"github.com/arisinghackers/goxploit/pkg/msfrpc"
+)
 
 type ModuleService struct {
 	rpc *msfrpc.MsfRpcClient
@@ -18,12 +22,16 @@ type ExecuteModuleResponse struct {
 }
 
 func (s *ModuleService) Execute(req ExecuteModuleRequest) (*ExecuteModuleResponse, error) {
+	return s.ExecuteContext(context.Background(), req)
+}
+
+func (s *ModuleService) ExecuteContext(ctx context.Context, req ExecuteModuleRequest) (*ExecuteModuleResponse, error) {
 	options := req.Options
 	if options == nil {
 		options = map[string]interface{}{}
 	}
 
-	resp, err := s.rpc.AuthenticatedRequest([]any{
+	resp, err := s.rpc.AuthenticatedRequestContext(ctx, []any{
 		"module.execute",
 		req.ModuleType,
 		req.ModuleName,

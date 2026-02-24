@@ -1,6 +1,10 @@
 package metasploit
 
-import "github.com/arisinghackers/goxploit/pkg/msfrpc"
+import (
+	"context"
+
+	"github.com/arisinghackers/goxploit/pkg/msfrpc"
+)
 
 type CoreService struct {
 	rpc *msfrpc.MsfRpcClient
@@ -14,7 +18,11 @@ type CoreVersion struct {
 }
 
 func (s *CoreService) Version() (*CoreVersion, error) {
-	resp, err := s.rpc.AuthenticatedRequest([]any{"core.version"})
+	return s.VersionContext(context.Background())
+}
+
+func (s *CoreService) VersionContext(ctx context.Context) (*CoreVersion, error) {
+	resp, err := s.rpc.AuthenticatedRequestContext(ctx, []any{"core.version"})
 	if err != nil {
 		return nil, err
 	}

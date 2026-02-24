@@ -2,6 +2,7 @@ package main
 
 // running some tests on the lib
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -13,13 +14,15 @@ func main() {
 
 	client := msfrpc.NewMsfRpcClient("killodds", "false", "veemweaver", "127.0.0.1", 3000, "/api")
 	typedClient := metasploit.NewClient(client)
-	login, err := typedClient.Auth.Login("veemweaver", "killodds")
+	ctx := context.Background()
+
+	login, err := typedClient.Auth.LoginContext(ctx, "veemweaver", "killodds")
 	if err != nil {
 		log.Fatalf("Error authenticating: %v", err)
 	}
 	log.Printf("Authenticated successfully, token: %s", login.Token)
 
-	version, err := typedClient.Core.Version()
+	version, err := typedClient.Core.VersionContext(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
