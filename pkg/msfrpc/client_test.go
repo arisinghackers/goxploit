@@ -2,11 +2,13 @@ package msfrpc
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -169,5 +171,30 @@ func TestMsfRequestDecodesMsgpackBody(t *testing.T) {
 	}
 	if got := asString(resp["version"]); got != "6.4.0" {
 		t.Fatalf("expected decoded version, got %q", got)
+	}
+}
+
+func TestMsfRequestContextCancellation(t *testing.T) {
+	t.Parallel()
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(200 * time.Millisecond)
+		_ = msgpack.NewEncoder(w).Encode(map[string]interface{}{"ok": true})
+	}))
+	defer server.Close()
+
+	client := NewMsfRpcClient("pw", "false", "user", "127.0.0.1", 55553, "/api/")
+	client.BaseURL = server.URL
+	client.HTTPClient = server.Client()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	_, err := client.MsfRequestContext(ctx, []interface{}{"core.version"})
+	if err == nil {
+		t.Fatal("expected context cancellation error, got nil")
+	}
+	if !strings.Contains(err.Error(), "context canceled") {
+		t.Fatalf("expected context canceled error, got %v", err)
 	}
 }

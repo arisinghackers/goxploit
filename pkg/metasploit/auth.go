@@ -1,6 +1,10 @@
 package metasploit
 
-import "github.com/arisinghackers/goxploit/pkg/msfrpc"
+import (
+	"context"
+
+	"github.com/arisinghackers/goxploit/pkg/msfrpc"
+)
 
 type AuthService struct {
 	rpc *msfrpc.MsfRpcClient
@@ -11,7 +15,11 @@ type LoginResponse struct {
 }
 
 func (s *AuthService) Login(userName, userPassword string) (*LoginResponse, error) {
-	resp, err := s.rpc.MsfRequest([]interface{}{"auth.login", userName, userPassword})
+	return s.LoginContext(context.Background(), userName, userPassword)
+}
+
+func (s *AuthService) LoginContext(ctx context.Context, userName, userPassword string) (*LoginResponse, error) {
+	resp, err := s.rpc.MsfRequestContext(ctx, []interface{}{"auth.login", userName, userPassword})
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package msfrpc
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -43,8 +44,12 @@ func NewMsfRpcClient(userPassword, ssl, userName, ip string, port int, webServer
 }
 
 func (c *MsfRpcClient) MsfAuth() (string, error) {
+	return c.MsfAuthContext(context.Background())
+}
+
+func (c *MsfRpcClient) MsfAuthContext(ctx context.Context) (string, error) {
 	payload := []interface{}{"auth.login", c.UserName, c.UserPassword}
-	resp, err := c.MsfRequest(payload)
+	resp, err := c.MsfRequestContext(ctx, payload)
 	if err != nil {
 		return "", err
 	}
@@ -69,6 +74,10 @@ func (c *MsfRpcClient) MsfAuth() (string, error) {
 }
 
 func (c *MsfRpcClient) AuthenticatedRequest(payload []any) (map[string]interface{}, error) {
+	return c.AuthenticatedRequestContext(context.Background(), payload)
+}
+
+func (c *MsfRpcClient) AuthenticatedRequestContext(ctx context.Context, payload []any) (map[string]interface{}, error) {
 	if c.Token == nil {
 		return nil, errors.New("token is nil; you must authenticate first")
 	}
@@ -81,18 +90,23 @@ func (c *MsfRpcClient) AuthenticatedRequest(payload []any) (map[string]interface
 		requestPayload = append(requestPayload, v)
 	}
 
-	return c.MsfRequest(requestPayload)
+	return c.MsfRequestContext(ctx, requestPayload)
 }
 
 // Sends a generic RPC request and decodes the response
 func (c *MsfRpcClient) MsfRequest(clientRequest []interface{}) (map[string]interface{}, error) {
+	return c.MsfRequestContext(context.Background(), clientRequest)
+}
+
+// MsfRequestContext sends a generic RPC request using the provided context.
+func (c *MsfRpcClient) MsfRequestContext(ctx context.Context, clientRequest []interface{}) (map[string]interface{}, error) {
 	var buf bytes.Buffer
 	encoder := msgpack.NewEncoder(&buf)
 	if err := encoder.Encode(clientRequest); err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", c.BaseURL, &buf)
+	req, err := http.NewRequestWithContext(ctx, "POST", c.BaseURL, &buf)
 	if err != nil {
 		return nil, err
 	}
