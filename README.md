@@ -32,13 +32,13 @@ import (
 )
 
 client := msfrpc.NewMsfRpcClient("your_password", "false", "your_username", "127.0.0.1", 55552, "/api")
-token, err := client.MsfAuth()
+sdk := metasploit.NewClient(client)
+login, err := sdk.Auth.Login("your_username", "your_password")
 if err != nil {
     log.Fatalf("Auth error: %v", err)
 }
-fmt.Println("Token:", token)
+fmt.Println("Token:", login.Token)
 
-sdk := metasploit.NewClient(client)
 version, err := sdk.Core.Version()
 if err != nil {
     log.Fatal(err)

@@ -1,10 +1,6 @@
 package metasploit
 
-import (
-	"fmt"
-
-	"github.com/arisinghackers/goxploit/pkg/msfrpc"
-)
+import "github.com/arisinghackers/goxploit/pkg/msfrpc"
 
 type CoreService struct {
 	rpc *msfrpc.MsfRpcClient
@@ -20,6 +16,9 @@ type CoreVersion struct {
 func (s *CoreService) Version() (*CoreVersion, error) {
 	resp, err := s.rpc.AuthenticatedRequest([]any{"core.version"})
 	if err != nil {
+		return nil, err
+	}
+	if err := checkRPCFailure(resp); err != nil {
 		return nil, err
 	}
 
@@ -41,23 +40,4 @@ func (s *CoreService) Version() (*CoreVersion, error) {
 		Ruby:    ruby,
 		API:     api,
 	}, nil
-}
-
-func readString(resp map[string]interface{}, key string, required bool) (string, error) {
-	v, ok := resp[key]
-	if !ok {
-		if required {
-			return "", fmt.Errorf("missing %q in response", key)
-		}
-		return "", nil
-	}
-
-	switch typed := v.(type) {
-	case string:
-		return typed, nil
-	case []byte:
-		return string(typed), nil
-	default:
-		return "", fmt.Errorf("field %q has invalid type %T", key, v)
-	}
 }

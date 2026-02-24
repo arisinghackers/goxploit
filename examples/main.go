@@ -12,13 +12,13 @@ import (
 func main() {
 
 	client := msfrpc.NewMsfRpcClient("killodds", "false", "veemweaver", "127.0.0.1", 3000, "/api")
-	resp, err := client.MsfAuth()
+	typedClient := metasploit.NewClient(client)
+	login, err := typedClient.Auth.Login("veemweaver", "killodds")
 	if err != nil {
 		log.Fatalf("Error authenticating: %v", err)
 	}
-	log.Printf("Authenticated successfully, token: %s", resp)
+	log.Printf("Authenticated successfully, token: %s", login.Token)
 
-	typedClient := metasploit.NewClient(client)
 	version, err := typedClient.Core.Version()
 	if err != nil {
 		log.Fatal(err)
