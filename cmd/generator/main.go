@@ -1,13 +1,14 @@
 package main
 
-import "github.com/arisinghackers/goxploit/pkg/msfrpc"
+import (
+	"log"
+
+	codegen "github.com/arisinghackers/goxploit/internal/generator"
+)
 
 func main() {
-	msf_rpc_library_generator := msfrpc.MsfLibraryGenerator{}
-
-	err := msf_rpc_library_generator.GenerateLibrary()
-	if err != nil {
-		panic(err)
+	generator := codegen.NewLibraryGenerator()
+	if err := generator.GenerateLibrary(); err != nil {
+		log.Fatal(err)
 	}
-
 }

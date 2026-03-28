@@ -4,6 +4,7 @@ package metasploit
 
 import (
 	"errors"
+	"fmt"
 	"github.com/arisinghackers/goxploit/pkg/msfrpc"
 )
 
@@ -15,8 +16,8 @@ func NewPlugin(client *msfrpc.MsfRpcClient) *Plugin {
 	return &Plugin{client}
 }
 
-func (c *Plugin) Load(token string, PluginName string, Options string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"plugin.load", c.Token, PluginName, Options})
+func (c *Plugin) Load(PluginName string, Options string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"plugin.load", PluginName, Options})
 	if err != nil {
 		return nil, err
 	}
@@ -24,13 +25,13 @@ func (c *Plugin) Load(token string, PluginName string, Options string) (map[stri
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Plugin) Unload(token string, PluginName string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"plugin.unload", c.Token, PluginName})
+func (c *Plugin) Unload(PluginName string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"plugin.unload", PluginName})
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +39,13 @@ func (c *Plugin) Unload(token string, PluginName string) (map[string]interface{}
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Plugin) Loaded(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"plugin.loaded", c.Token})
+func (c *Plugin) Loaded() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"plugin.loaded"})
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +53,7 @@ func (c *Plugin) Loaded(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
-

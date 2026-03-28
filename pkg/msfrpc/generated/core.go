@@ -4,6 +4,7 @@ package metasploit
 
 import (
 	"errors"
+	"fmt"
 	"github.com/arisinghackers/goxploit/pkg/msfrpc"
 )
 
@@ -15,8 +16,8 @@ func NewCore(client *msfrpc.MsfRpcClient) *Core {
 	return &Core{client}
 }
 
-func (c *Core) AddModulePath(token string, Path string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.add_module_path", c.Token, Path})
+func (c *Core) AddModulePath(Path string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.add_module_path", Path})
 	if err != nil {
 		return nil, err
 	}
@@ -24,13 +25,13 @@ func (c *Core) AddModulePath(token string, Path string) (map[string]interface{},
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) ModuleStats(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.module_stats", c.Token})
+func (c *Core) ModuleStats() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.module_stats"})
 	if err != nil {
 		return nil, err
 	}
@@ -38,13 +39,13 @@ func (c *Core) ModuleStats(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) ReloadModules(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.reload_modules", c.Token})
+func (c *Core) ReloadModules() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.reload_modules"})
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +53,13 @@ func (c *Core) ReloadModules(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) Save(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.save", c.Token})
+func (c *Core) Save() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.save"})
 	if err != nil {
 		return nil, err
 	}
@@ -66,13 +67,13 @@ func (c *Core) Save(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) Setg(token string, OptionName string, OptionValue string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.setg", c.Token, OptionName, OptionValue})
+func (c *Core) Setg(OptionName string, OptionValue string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.setg", OptionName, OptionValue})
 	if err != nil {
 		return nil, err
 	}
@@ -80,13 +81,13 @@ func (c *Core) Setg(token string, OptionName string, OptionValue string) (map[st
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) Unsetg(token string, OptionName string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.unsetg", c.Token, OptionName})
+func (c *Core) Unsetg(OptionName string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.unsetg", OptionName})
 	if err != nil {
 		return nil, err
 	}
@@ -94,13 +95,13 @@ func (c *Core) Unsetg(token string, OptionName string) (map[string]interface{}, 
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) ThreadList(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.thread_list", c.Token})
+func (c *Core) ThreadList() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.thread_list"})
 	if err != nil {
 		return nil, err
 	}
@@ -108,13 +109,13 @@ func (c *Core) ThreadList(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) ThreadKill(token string, ThreadID string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.thread_kill", c.Token, ThreadID})
+func (c *Core) ThreadKill(ThreadID string) (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.thread_kill", ThreadID})
 	if err != nil {
 		return nil, err
 	}
@@ -122,13 +123,13 @@ func (c *Core) ThreadKill(token string, ThreadID string) (map[string]interface{}
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) Version(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.version", c.Token})
+func (c *Core) Version() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.version"})
 	if err != nil {
 		return nil, err
 	}
@@ -136,13 +137,13 @@ func (c *Core) Version(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
 
-func (c *Core) Stop(token string) (map[string]interface{}, error) {
-	resp, err := c.MsfRequest([]interface{}{"core.stop", c.Token})
+func (c *Core) Stop() (map[string]interface{}, error) {
+	resp, err := c.AuthenticatedRequest([]interface{}{"core.stop"})
 	if err != nil {
 		return nil, err
 	}
@@ -150,8 +151,7 @@ func (c *Core) Stop(token string) (map[string]interface{}, error) {
 		return nil, errors.New("Unprocessable Content")
 	}
 	if errMsg, ok := resp["error_message"]; ok {
-		return nil, errors.New(errMsg.(string))
+		return nil, fmt.Errorf("%v", errMsg)
 	}
 	return resp, nil
 }
-
