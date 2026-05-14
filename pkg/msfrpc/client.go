@@ -15,7 +15,7 @@ import (
 type MsfRpcClient struct {
 	UserPassword string
 	Token        *string
-	SSL          string
+	UseSSL       bool
 	UserName     string
 	IP           string
 	Port         int
@@ -25,15 +25,16 @@ type MsfRpcClient struct {
 }
 
 func NewMsfRpcClient(userPassword, ssl, userName, ip string, port int, webServerURI string) *MsfRpcClient {
+	useSSL := ssl == "true"
 	protocol := "http://"
-	if ssl == "true" {
+	if useSSL {
 		protocol = "https://"
 	}
 	baseURL := fmt.Sprintf("%s%s:%d%s", protocol, ip, port, webServerURI)
 
 	return &MsfRpcClient{
 		UserPassword: userPassword,
-		SSL:          protocol,
+		UseSSL:       useSSL,
 		UserName:     userName,
 		IP:           ip,
 		Port:         port,
