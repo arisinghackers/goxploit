@@ -78,15 +78,27 @@ func readInt(resp map[string]interface{}, key string, required bool) (int64, err
 	}
 }
 
+var errRPCFailed = fmt.Errorf("rpc call returned failure")
+
 func checkRPCFailure(resp map[string]interface{}) error {
-	if result, ok := resp["result"]; ok && fmt.Sprintf("%v", result) == "failure" {
-		if msg, exists := resp["error_message"]; exists {
-			return fmt.Errorf("%v", msg)
+	v, ok := resp["result"]
+	if !ok {
+		return nil
+	}
+	switch s := v.(type) {
+	case string:
+		if s != "failure" {
+			return nil
 		}
-		return fmt.Errorf("rpc call returned failure")
+	case []byte:
+		if string(s) != "failure" {
+			return nil
+		}
+	default:
+		return nil
 	}
 	if msg, ok := resp["error_message"]; ok {
 		return fmt.Errorf("%v", msg)
 	}
-	return nil
+	return errRPCFailed
 }
