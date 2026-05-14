@@ -20,5 +20,8 @@ jobs:
       - name: Vet
         run: go vet ./...
 
+      - name: Verify module
+        run: go mod verify
+
       - name: Test
         run: go test ./...
