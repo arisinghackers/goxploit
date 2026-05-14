@@ -1,11 +1,8 @@
 # goxploit
 
 **GoXploit** is a modular Go client for interacting with the [Metasploit RPC API](https://docs.rapid7.com/metasploit/standard-api-methods-reference).  
-It includes:
-- low-level RPC primitives (`pkg/msfrpc`)
-- generated raw wrappers (`pkg/msfrpc/generated`)
-- a typed SDK layer (`pkg/metasploit`)
 
+![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/arisinghackers/goxploit?utm_source=oss&utm_medium=github&utm_campaign=arisinghackers%2Fgoxploit&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 ## Features
 
 - RPC client for Metasploit (`pkg/msfrpc`)
